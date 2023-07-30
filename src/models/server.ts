@@ -26,7 +26,12 @@ class Server {
     }
 
     private middlewares() {
-        this.app.use(cors());
+        this.app.use(cors({
+            origin: process.env.frontendDomain,
+            methods: ['GET', 'POST', 'PUT', 'DELETE'],
+            allowedHeaders: ['Content-Type', 'Authorization'],
+            exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
+        }));
         this.app.use(express.json());
     }
 
