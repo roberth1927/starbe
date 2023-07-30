@@ -5,9 +5,9 @@ import { Request, Response } from "express";
 import cloudinary from "cloudinary";
 
 cloudinary.v2.config({
-  cloud_name: "dmzkobsaw",
-  api_key: "612131934373138",
-  api_secret: "mSpVTy8JVef1fa55Rh2sBYKfTik",
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const registerNewUser = async (
@@ -34,11 +34,13 @@ const registerNewUser = async (
 
 
 const getUsers = async (req: Request, res: Response) => {
-  const { limit = 10, from = 0 } = req.query;
+  const { limit = 10, from = 0, name = '' } = req.query;
+
+  const query = (name as string) ? { name: { $regex: new RegExp(name as string, 'i') } } : {};
 
   const [total, data] = await Promise.all([
     UserModel.countDocuments(),
-    UserModel.find({})            
+    UserModel.find(query)          
     .skip( Number( from ) )
     .limit(Number(limit)),
   ]);
